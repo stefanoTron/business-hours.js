@@ -1,4 +1,4 @@
-# business-hours
+# business-hours.js
 Business hours javascript lib
 
 [![Travis](https://img.shields.io/travis/littletower/business-hours.js.svg?style=flat-square)]()
