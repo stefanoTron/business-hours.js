@@ -69,7 +69,7 @@ class BusinessHours {
 
   isOpenNow(now = new Date()) {
     const day = getDay(now);
-    console.log("now: ", format(now, "DD/MM/YYYY HH:mm"));
+  //  console.log("now: ", format(now, "DD/MM/YYYY HH:mm"));
     let isOpenNow = false;
     if (this.hours[day.toString()] === "closed") return isOpenNow;
     this.hours[day.toString()].some((fromTo, index) => {
@@ -83,14 +83,6 @@ class BusinessHours {
       const toDate = setHours(setMinutes(now, toMinutes), toHours);
       isOpenNow = isWithinRange(now, fromDate, toDate);
 
-      console.log(
-        "is ",
-        format(now, "DD/MM/YYYY HH:mm"),
-        " between ",
-        format(fromDate, "DD/MM/YYYY HH:mm"),
-        " - ",
-        format(toDate, "DD/MM/YYYY HH:mm"),
-        isOpenNow
       );
       return isOpenNow;
     });
