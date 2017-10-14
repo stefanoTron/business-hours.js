@@ -5,8 +5,17 @@ Business hours javascript lib
 [![Codecov](https://img.shields.io/codecov/c/github/littletower/business-hours.js.svg?style=flat-square)]()
 [![npm](https://img.shields.io/npm/v/business-hours.js.svg?style=flat-square)]()
 
-# Installation
-coming soon
+## Installation
+
+Add the latest version of `business-hours.js` to your package.json:
+```
+npm install business-hours.js --save
+```
+or
+```
+yarn add business-hours.js
+```
+
 
 # Configuration
 coming soon
