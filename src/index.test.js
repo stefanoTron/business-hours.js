@@ -7,6 +7,9 @@ import format from "date-fns/format";
 bh.init();
 
 describe("business-hours-js", function() {
+  after(function() {
+    MockDate.reset();
+  });
   describe("isOpenNow", function() {
     it("outside business hours, should equal false", function() {
       expect(bh.isOpenNow(new Date(2017, 9, 1, 16, 0))).to.equal(false);

@@ -5,8 +5,8 @@
   "main": "dist/index.js",
   "scripts": {
     "commit": "git-cz",
-    "report-coverage":
-      "nyc report --reporter=text-lcov > coverage.lcov && codecov",
+
+    "report-coverage": "nyc report --reporter=lcov > coverage.lcov && codecov",
     "prebuild": "rimraf dist",
     "build": "babel --copy-files --out-dir dist --ignore *.test.js src",
     "test": "mocha --compilers js:babel-register src/index.test.js -w",
