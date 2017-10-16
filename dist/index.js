@@ -30,6 +30,18 @@ var _is_future = require("date-fns/is_future");
 
 var _is_future2 = _interopRequireDefault(_is_future);
 
+var _add_days = require("date-fns/add_days");
+
+var _add_days2 = _interopRequireDefault(_add_days);
+
+var _is_equal = require("date-fns/is_equal");
+
+var _is_equal2 = _interopRequireDefault(_is_equal);
+
+var _is_before = require("date-fns/is_before");
+
+var _is_before2 = _interopRequireDefault(_is_before);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -95,10 +107,10 @@ var BusinessHours = function () {
       var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Date();
 
       var day = (0, _get_day2.default)(now);
-      console.log("now: ", (0, _format2.default)(now, "DD/MM/YYYY HH:mm"));
+      //  console.log("now: ", format(now, "DD/MM/YYYY HH:mm"));
       var isOpenNow = false;
       if (this.hours[day.toString()] === "closed") return isOpenNow;
-      this.hours[day.toString()].forEach(function (fromTo, index) {
+      this.hours[day.toString()].some(function (fromTo, index) {
         var from = fromTo.from;
         var to = fromTo.to;
         var fromHours = from.substr(0, 2);
@@ -107,9 +119,9 @@ var BusinessHours = function () {
         var toMinutes = to.substr(3, 2);
         var fromDate = (0, _set_hours2.default)((0, _set_minutes2.default)(now, fromMinutes), fromHours);
         var toDate = (0, _set_hours2.default)((0, _set_minutes2.default)(now, toMinutes), toHours);
-        console.log((0, _format2.default)(fromDate, "DD/MM/YYYY HH:mm"), " - ", (0, _format2.default)(toDate, "DD/MM/YYYY HH:mm"));
         isOpenNow = (0, _is_within_range2.default)(now, fromDate, toDate);
-        if (isOpenNow) return isOpenNow;
+
+        return isOpenNow;
       });
       return isOpenNow;
     }
@@ -117,7 +129,7 @@ var BusinessHours = function () {
     key: "willBeOpenOn",
     value: function willBeOpenOn(date) {
       var day = (0, _get_day2.default)(date);
-      if ((0, _is_future2.default)(date)) {
+      if ((0, _is_future2.default)(date) || (0, _is_equal2.default)(new Date(), date)) {
         if (this.hours[day.toString()] !== "closed") {
           return true;
         } else {
@@ -126,31 +138,75 @@ var BusinessHours = function () {
       }
       return false;
     }
+  }, {
+    key: "isOpenTomorrow",
+    value: function isOpenTomorrow() {
+      var tomorrow = (0, _add_days2.default)(new Date(), 1);
+      return this.willBeOpenOn(tomorrow);
+    }
+  }, {
+    key: "isOpenAfterTomorrow",
+    value: function isOpenAfterTomorrow() {
+      var afterTomorrow = (0, _add_days2.default)(new Date(), 2);
+      return this.willBeOpenOn(afterTomorrow);
+    }
+  }, {
+    key: "nextOpeningDate",
+    value: function nextOpeningDate() {
+      var includeToday = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+      var date = (0, _add_days2.default)(new Date(), 1);
+      if (includeToday) {
+        date = new Date();
+      }
+
+      var nextOpeningDate = null;
+      while (nextOpeningDate === null) {
+        if (this.willBeOpenOn(date)) {
+          nextOpeningDate = date;
+        } else {
+          date = (0, _add_days2.default)(date, 1);
+        }
+      }
+      return nextOpeningDate;
+    }
+  }, {
+    key: "nextOpeningHour",
+    value: function nextOpeningHour() {
+      var nextOpeningHour = this._nextOpeningHour(this.nextOpeningDate(true));
+      if (nextOpeningHour === null) {
+        return this._nextOpeningHour(this.nextOpeningDate(false));
+      }
+      return nextOpeningHour;
+    }
+  }, {
+    key: "_nextOpeningHour",
+    value: function _nextOpeningHour(nextOpeningDate) {
+      var day = (0, _get_day2.default)(nextOpeningDate);
+      var firstDate = null;
+      this.hours[day.toString()].some(function (fromTo, index) {
+        var from = fromTo.from;
+        var to = fromTo.to;
+        var fromHours = from.substr(0, 2);
+        var fromMinutes = from.substr(3, 2);
+        var toHours = to.substr(0, 2);
+        var toMinutes = to.substr(3, 2);
+        var fromDate = (0, _set_hours2.default)((0, _set_minutes2.default)(nextOpeningDate, fromMinutes), fromHours);
+
+        if ((0, _is_before2.default)(new Date(), fromDate)) {
+          firstDate = fromDate;
+          return true;
+        }
+      });
+
+      return firstDate;
+    }
+    //nextOpeningDateText
+    //nextOpeningHourText
+
   }]);
 
   return BusinessHours;
 }();
-/*
-function ola2() {
-  console.log("ola2");
-}
-function ola() {
-  console.log("ola");
-  ola2();
-  return 123;
-}
-
-function init() {
-
-}
-function getLang() {
-
-}
-module.exports = {
-  all: hours,
-  random: ola
-};
-*/
-
 
 module.exports = new BusinessHours();

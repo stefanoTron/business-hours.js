@@ -9,7 +9,8 @@
     "report-coverage":
       "nyc report --reporter=lcov | codecov -t c1cea4d6-9aec-445c-8179-bc5543358876",
     "prebuild": "rimraf dist",
-    "build": "babel --copy-files --out-dir dist --ignore *.test.js src",
+    "build":
+      "npm run prebuild && babel --copy-files --out-dir dist --ignore *.test.js src",
     "test": "mocha --compilers js:babel-register src/index.test.js -w",
     "test:single": "nyc mocha --compilers js:babel-register src/index.test.js",
     "semantic-release":

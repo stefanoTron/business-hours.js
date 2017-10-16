@@ -16,9 +16,85 @@ or
 yarn add business-hours.js
 ```
 
+# Usage
 
 # Configuration
-coming soon
+
+To get started, setup a JSON file where you define the business hours.
+`0` stands for `Sunday`
+`1` stands for `Monday`
+and so on.
+You can have 1 to N `from/to` pairs per weekday.
+
+```json
+{
+  "0": [
+    {
+      "from": "10:00",
+      "to": "13:30"
+    },
+    {
+      "from": "17:00",
+      "to": "20:00"
+    },
+    {
+      "from": "21:00",
+      "to": "24:00"
+    }
+  ],
+  "1": [
+    {
+      "from": "10:00",
+      "to": "13:30"
+    },
+    {
+      "from": "18:00",
+      "to": "22:00"
+    }
+  ],
+  "2": "closed",
+  "3": [
+    {
+      "from": "10:00",
+      "to": "13:30"
+    },
+    {
+      "from": "18:00",
+      "to": "22:00"
+    }
+  ],
+  "4": [
+    {
+      "from": "10:00",
+      "to": "13:30"
+    },
+    {
+      "from": "18:00",
+      "to": "22:00"
+    }
+  ],
+  "5": [
+    {
+      "from": "10:00",
+      "to": "13:30"
+    },
+    {
+      "from": "18:00",
+      "to": "22:00"
+    }
+  ],
+  "6": [
+    {
+      "from": "10:00",
+      "to": "13:30"
+    },
+    {
+      "from": "18:00",
+      "to": "22:00"
+    }
+  ]
+}
+```
 
 # Example
 coming soon
