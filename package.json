@@ -50,7 +50,7 @@
       "path": "node_modules/cz-conventional-changelog"
     },
     "ghooks": {
-      "pre-commit": "npm run test:single"
+      "pre-commit": "npm run build && npm run test:single"
     }
   },
   "dependencies": {
