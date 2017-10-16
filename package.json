@@ -5,19 +5,18 @@
   "main": "dist/index.js",
   "scripts": {
     "commit": "git-cz",
-
-    "report-coverage":
-      "nyc report --reporter=lcov | codecov -t c1cea4d6-9aec-445c-8179-bc5543358876",
+    "report-coverage": "nyc report --reporter=lcov | codecov -t c1cea4d6-9aec-445c-8179-bc5543358876",
     "prebuild": "rimraf dist",
-    "build":
-      "npm run prebuild && babel --copy-files --out-dir dist --ignore *.test.js src",
+    "build": "npm run prebuild && babel --copy-files --out-dir dist --ignore *.test.js src",
     "test": "mocha --compilers js:babel-register src/index.test.js -w",
     "test:single": "nyc mocha --compilers js:babel-register src/index.test.js",
-    "semantic-release":
-      "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "babel": {
-    "presets": ["es2015", "stage-2"]
+    "presets": [
+      "es2015",
+      "stage-2"
+    ]
   },
   "repository": {
     "type": "git",
@@ -38,7 +37,7 @@
     "codecov.io": "0.1.6",
     "commitizen": "2.9.6",
     "cz-conventional-changelog": "2.0.0",
-    "ghooks": "2.0.0",
+    "husky": "0.14.3",
     "istanbul": "0.4.5",
     "mocha": "3.5.3",
     "nyc": "11.2.1",
