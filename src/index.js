@@ -1,4 +1,3 @@
-import hoursJson from "./hours.json";
 import setMinutes from "date-fns/set_minutes";
 import setHours from "date-fns/set_hours";
 import getDay from "date-fns/get_day";
@@ -8,7 +7,7 @@ import isFuture from "date-fns/is_future";
 import addDays from "date-fns/add_days";
 import isEqual from "date-fns/is_equal";
 import isBefore from "date-fns/is_before";
-
+import _ from "lodash";
 const weekdays = [
   "Sunday",
   "Monday",
@@ -35,9 +34,10 @@ class BusinessHours {
   }
 
   init(hours) {
-    if (hours === undefined) {
-      hours = hoursJson;
+    if (_.isEmpty(hours)) {
+      throw new Error("Hours are not set. Check your init() function.");
     }
+
     weekdays.forEach((day, index) => {
       if (!hours.hasOwnProperty(index.toString())) {
         throw new Error(day + " is missing from config");
@@ -49,11 +49,11 @@ class BusinessHours {
             console.error(day + " is missing 'to' in config");
           } else if (!this._isHourValid(hours[index.toString()][0].from)) {
             console.error(
-              day + "'s 'from1' has not the right format. Should be ##:##"
+              day + "'s 'from' has not the right format. Should be ##:##"
             );
           } else if (!this._isHourValid(hours[index.toString()][0].to)) {
             console.error(
-              day + "'s 'to1' has not the right format. Should be ##:##"
+              day + "'s 'to' has not the right format. Should be ##:##"
             );
           }
         }

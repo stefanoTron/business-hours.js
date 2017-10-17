@@ -1,10 +1,11 @@
 var expect = require("chai").expect;
 var bh = require("./index.js");
+var hoursJson = require("./hours.json");
 var hoursJson2 = require("./hours2.json");
 var MockDate = require("mockdate");
 import format from "date-fns/format";
 
-bh.init();
+bh.init(hoursJson);
 
 describe("business-hours-js", function() {
   after(function() {
@@ -162,6 +163,26 @@ describe("business-hours-js", function() {
   describe("init", function() {
     it("missing sunday", function() {
       expect(bh.init.bind(bh, hoursJson2)).to.throw(
+        "Sunday is missing from config"
+      );
+    });
+    it("missing config, empty object", function() {
+      expect(bh.init.bind(bh, {})).to.throw(
+        "Hours are not set. Check your init() function."
+      );
+    });
+    it("missing config, null ", function() {
+      expect(bh.init.bind(bh, null)).to.throw(
+        "Hours are not set. Check your init() function."
+      );
+    });
+    it("missing config, undefined ", function() {
+      expect(bh.init.bind(bh, undefined)).to.throw(
+        "Hours are not set. Check your init() function."
+      );
+    });
+    it("missing config, {'a':'test'} ", function() {
+      expect(bh.init.bind(bh, { a: "test" })).to.throw(
         "Sunday is missing from config"
       );
     });
