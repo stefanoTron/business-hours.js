@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import hoursJson from "./hours.json";
 import businessHours from "business-hours.js";
+import Clock from "react-live-clock";
 import "./App.css";
 
 class App extends Component {
@@ -12,6 +13,8 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
+          Now it is:{" "}
+          <Clock format={"HH:mm on dddd, MMMM Do YYYY"} ticking={true} />
           <p className="App-intro">
             Is open now? {businessHours.isOpenNow().toString()}
           </p>

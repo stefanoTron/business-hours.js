@@ -1,5 +1,7 @@
 # business-hours.js
-Business hours javascript lib
+Handle business hours of a restaurant, office or any other business. Highly customizable with lots of features.
+
+[Demo](https://business-hours-example.herokuapp.com/)
 
 [![Travis](https://img.shields.io/travis/littletower/business-hours.js.svg?style=flat-square)]()
 [![Codecov](https://img.shields.io/codecov/c/github/littletower/business-hours.js.svg?style=flat-square)]()
@@ -112,9 +114,9 @@ import hoursJson from "./hours.json";
 or it could come from any other endpoint (DB, GraphQL, Firebase...), as long as it's in JSON.
 
 # Example
-Find an whole example in React here [here](example/)
+Find a whole example in React here [here](example/)
 
 # TODOs
-* add holidays -> single day, or range
-* add always closed on public holidays, country specific
-*
+- [ ] use ISO formate for weekday, meaning, starting the week on Monday instead of Sunday
+- [ ] add holidays (single day or range) in ISO (ISO 8601) format YYYY-MM-DD
+- [ ] add always closed on public holidays (country specific)
