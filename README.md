@@ -20,8 +20,7 @@ yarn add business-hours.js
 
 To get started, setup a JSON file where you define the business hours.
 
-`0` stands for `Sunday`
-
+`0` stands for `Sunday`<br>
 `1` stands for `Monday` and so on.
 
 You can have 1 to N `from/to` pairs per weekday. If on a given day you are closed, instead of a `from/to` pair, just put `closed`.
@@ -110,7 +109,12 @@ businessHours.init(hoursJson);
 ```
 import hoursJson from "./hours.json";
 ```
-or it could come from any other endpoind, as long as it's JSON.
+or it could come from any other endpoint (DB, GraphQL, Firebase...), as long as it's in JSON.
 
 # Example
 Find an whole example in React here [here](example/)
+
+# TODOs
+* add holidays -> single day, or range
+* add always closed on public holidays, country specific
+*
