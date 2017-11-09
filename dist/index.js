@@ -2,10 +2,6 @@
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _hours = require("./hours.json");
-
-var _hours2 = _interopRequireDefault(_hours);
-
 var _set_minutes = require("date-fns/set_minutes");
 
 var _set_minutes2 = _interopRequireDefault(_set_minutes);
@@ -42,6 +38,10 @@ var _is_before = require("date-fns/is_before");
 
 var _is_before2 = _interopRequireDefault(_is_before);
 
+var _lodash = require("lodash");
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -71,9 +71,10 @@ var BusinessHours = function () {
     value: function init(hours) {
       var _this = this;
 
-      if (hours === undefined) {
-        hours = _hours2.default;
+      if (_lodash2.default.isEmpty(hours)) {
+        throw new Error("Hours are not set. Check your init() function.");
       }
+
       weekdays.forEach(function (day, index) {
         if (!hours.hasOwnProperty(index.toString())) {
           throw new Error(day + " is missing from config");
@@ -84,9 +85,9 @@ var BusinessHours = function () {
             } else if (!hours[index.toString()][0].hasOwnProperty("to")) {
               console.error(day + " is missing 'to' in config");
             } else if (!_this._isHourValid(hours[index.toString()][0].from)) {
-              console.error(day + "'s 'from1' has not the right format. Should be ##:##");
+              console.error(day + "'s 'from' has not the right format. Should be ##:##");
             } else if (!_this._isHourValid(hours[index.toString()][0].to)) {
-              console.error(day + "'s 'to1' has not the right format. Should be ##:##");
+              console.error(day + "'s 'to' has not the right format. Should be ##:##");
             }
           }
         }
