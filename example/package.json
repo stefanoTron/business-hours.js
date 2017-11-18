@@ -6,10 +6,11 @@
     "react-scripts": "1.0.17"
   },
   "dependencies": {
-    "business-hours.js": "1.0.3",
+    "business-hours.js": "latest",
+    "moment-timezone": "0.5.14",
     "react": "16.1.0",
     "react-dom": "16.1.0",
-    "react-live-clock": "2.0.1"
+    "react-live-clock": "2.0.2"
   },
   "scripts": {
     "start": "react-scripts start",

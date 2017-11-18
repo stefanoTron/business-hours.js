@@ -1,21 +1,14 @@
-import setMinutes from "date-fns/set_minutes";
-import setHours from "date-fns/set_hours";
-import getDay from "date-fns/get_day";
-import format from "date-fns/format";
-import isWithinRange from "date-fns/is_within_range";
-import isFuture from "date-fns/is_future";
-import addDays from "date-fns/add_days";
-import isEqual from "date-fns/is_equal";
-import isBefore from "date-fns/is_before";
+import moment from "moment-timezone";
+import utils from "./utils";
 import _ from "lodash";
 const weekdays = [
-  "Sunday",
   "Monday",
   "Tuesday",
   "Wednesday",
   "Thursday",
   "Friday",
-  "Saturday"
+  "Saturday",
+  "Sunday"
 ];
 
 class BusinessHours {
@@ -32,6 +25,9 @@ class BusinessHours {
     if (isNaN(hour)) return false;
     return true;
   }
+  _getISOWeekDayName(isoDay) {
+    return weekdays[isoDay - 1];
+  }
 
   init(hours) {
     if (_.isEmpty(hours)) {
@@ -39,19 +35,19 @@ class BusinessHours {
     }
 
     weekdays.forEach((day, index) => {
-      if (!hours.hasOwnProperty(index.toString())) {
+      if (!hours.hasOwnProperty(day)) {
         throw new Error(day + " is missing from config");
       } else {
-        if (hours[index.toString()] !== "closed") {
-          if (!hours[index.toString()][0].hasOwnProperty("from")) {
+        if (hours[day] !== "closed") {
+          if (!hours[day][0].hasOwnProperty("from")) {
             console.error(day + " is missing 'from' in config");
-          } else if (!hours[index.toString()][0].hasOwnProperty("to")) {
+          } else if (!hours[day][0].hasOwnProperty("to")) {
             console.error(day + " is missing 'to' in config");
-          } else if (!this._isHourValid(hours[index.toString()][0].from)) {
+          } else if (!this._isHourValid(hours[day][0].from)) {
             console.error(
               day + "'s 'from' has not the right format. Should be ##:##"
             );
-          } else if (!this._isHourValid(hours[index.toString()][0].to)) {
+          } else if (!this._isHourValid(hours[day][0].to)) {
             console.error(
               day + "'s 'to' has not the right format. Should be ##:##"
             );
@@ -63,12 +59,15 @@ class BusinessHours {
     this.hours = hours;
   }
 
-  isClosedNow(now = new Date()) {
+  isClosedNow(now = utils.now(this.hours.timeZone)) {
     return !this.isOpenNow(now);
   }
 
-  isOpenNow(now = new Date()) {
-    const day = getDay(now);
+  isOpenNow(now = utils.now(this.hours.timeZone)) {
+    const day = this._getISOWeekDayName(now.isoWeekday());
+    if (this.isOnHoliday(now)) {
+      return false;
+    }
     //  console.log("now: ", format(now, "DD/MM/YYYY HH:mm"));
     let isOpenNow = false;
     if (this.hours[day.toString()] === "closed") return isOpenNow;
@@ -79,9 +78,17 @@ class BusinessHours {
       const fromMinutes = from.substr(3, 2);
       const toHours = to.substr(0, 2);
       const toMinutes = to.substr(3, 2);
-      const fromDate = setHours(setMinutes(now, fromMinutes), fromHours);
-      const toDate = setHours(setMinutes(now, toMinutes), toHours);
-      isOpenNow = isWithinRange(now, fromDate, toDate);
+      let fromDate = now.clone();
+      fromDate.set({
+        hour: fromHours,
+        minute: fromMinutes
+      });
+      let toDate = now.clone();
+      toDate.set({
+        hour: toHours,
+        minute: toMinutes
+      });
+      isOpenNow = now.isBetween(fromDate, toDate);
 
       return isOpenNow;
     });
@@ -89,29 +96,34 @@ class BusinessHours {
   }
 
   willBeOpenOn(date) {
-    const day = getDay(date);
-    if (isFuture(date) || isEqual(new Date(), date)) {
-      if (this.hours[day.toString()] !== "closed") {
+    const day = this._getISOWeekDayName(date.isoWeekday());
+    const now = utils.now(this.hours.timeZone);
+    if (now.isBefore(date) || now.isSame(date)) {
+      if (this.hours[day] !== "closed" && !this.isOnHoliday(date)) {
         return true;
       } else {
         return false;
       }
     }
+
     return false;
   }
+
   isOpenTomorrow() {
-    const tomorrow = addDays(new Date(), 1);
+    const tomorrow = utils.now(this.hours.timeZone).add(1, "days");
     return this.willBeOpenOn(tomorrow);
   }
+
   isOpenAfterTomorrow() {
-    const afterTomorrow = addDays(new Date(), 2);
+    const afterTomorrow = utils.now(this.hours.timeZone).add(2, "days");
     return this.willBeOpenOn(afterTomorrow);
   }
 
   nextOpeningDate(includeToday = false) {
-    let date = addDays(new Date(), 1);
-    if (includeToday) {
-      date = new Date();
+    let date = utils.now(this.hours.timeZone);
+
+    if (!includeToday) {
+      date.add(1, "days");
     }
 
     let nextOpeningDate = null;
@@ -119,10 +131,13 @@ class BusinessHours {
       if (this.willBeOpenOn(date)) {
         nextOpeningDate = date;
       } else {
-        date = addDays(date, 1);
+        date.add(1, "days");
       }
     }
-    return nextOpeningDate;
+    return nextOpeningDate
+      .hours(0)
+      .minutes(0)
+      .seconds(0);
   }
 
   nextOpeningHour() {
@@ -133,21 +148,22 @@ class BusinessHours {
     return nextOpeningHour;
   }
   _nextOpeningHour(nextOpeningDate) {
-    const day = getDay(nextOpeningDate);
+    const day = this._getISOWeekDayName(nextOpeningDate.isoWeekday());
     let firstDate = null;
-    this.hours[day.toString()].some((fromTo, index) => {
+    this.hours[day].some((fromTo, index) => {
       const from = fromTo.from;
       const to = fromTo.to;
       const fromHours = from.substr(0, 2);
       const fromMinutes = from.substr(3, 2);
       const toHours = to.substr(0, 2);
       const toMinutes = to.substr(3, 2);
-      const fromDate = setHours(
-        setMinutes(nextOpeningDate, fromMinutes),
-        fromHours
-      );
 
-      if (isBefore(new Date(), fromDate)) {
+      let fromDate = nextOpeningDate
+        .hours(fromHours)
+        .minutes(fromMinutes)
+        .seconds(0);
+
+      if (utils.now(this.hours.timeZone).isBefore(fromDate)) {
         firstDate = fromDate;
         return true;
       }
@@ -157,6 +173,44 @@ class BusinessHours {
   }
   //nextOpeningDateText
   //nextOpeningHourText
+
+  isOnHoliday(now = utils.now(this.hours.timeZone), callback) {
+    if (_.isEmpty(this.hours)) {
+      throw new Error(
+        "Hours are not set. Check your init() function or configuration."
+      );
+    }
+    if (_.isEmpty(this.hours.holidays)) {
+      this.hours.holidays = [];
+    }
+    for (let i = 0; i < this.hours.holidays.length; i++) {
+      if (this.hours.holidays[i].indexOf("-") > -1) {
+        let dates = this.hours.holidays[i].split("-");
+        let beginDate = moment(dates[0]);
+        let endDate = moment(dates[1]);
+        if (now.isBetween(beginDate, endDate)) {
+          typeof callback === "function" && callback();
+          return true;
+        }
+      } else {
+        let holidayDate = moment(this.hours.holidays[i]);
+        if (now.isSame(holidayDate, "day")) {
+          typeof callback === "function" && callback();
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isOnHolidayInDays(x = 1) {
+    if (!_.isInteger(x)) {
+      throw new Error("isOnHolidayInDays(:int) only accepts integers.");
+    }
+    let futureDate = utils.now(this.hours.timeZone).add(x, "days");
+
+    return this.isOnHoliday(futureDate);
+  }
 }
 
 module.exports = new BusinessHours();

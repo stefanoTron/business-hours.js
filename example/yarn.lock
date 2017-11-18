@@ -4163,6 +4163,12 @@ moment-timezone@0.5.13:
   dependencies:
     moment ">= 2.9.0"
 
+moment-timezone@0.5.14:
+  version "0.5.14"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.5.14.tgz#4eb38ff9538b80108ba467a458f3ed4268ccfcb1"
+  dependencies:
+    moment ">= 2.9.0"
+
 moment@2.18.1:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
@@ -5155,9 +5161,9 @@ react-error-overlay@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-3.0.0.tgz#c2bc8f4d91f1375b3dad6d75265d51cd5eeaf655"
 
-react-live-clock@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-live-clock/-/react-live-clock-2.0.1.tgz#f50c47059b6ab7f66979430803695a3bf2946174"
+react-live-clock@2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/react-live-clock/-/react-live-clock-2.0.2.tgz#c9e7a75b525db9c897f9a7b7f266cd3d671acc5d"
   dependencies:
     moment "2.18.1"
     moment-timezone "0.5.13"

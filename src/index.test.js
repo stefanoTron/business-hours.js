@@ -2,36 +2,73 @@ var expect = require("chai").expect;
 var bh = require("./index.js");
 var hoursJson = require("./hours.json");
 var hoursJson2 = require("./hours2.json");
+var hoursJsonMissingHolidays = require("./hoursMissingHolidays.json");
+var utils = require("./utils/index.js");
 var MockDate = require("mockdate");
-import format from "date-fns/format";
 
-bh.init(hoursJson);
+const TIMEZONE = "Europe/Luxembourg";
 
 describe("business-hours-js", function() {
-  after(function() {
+  beforeEach(function() {
+    bh.init(hoursJson);
+  });
+  afterEach(function() {
     MockDate.reset();
   });
+
   describe("isOpenNow", function() {
     it("outside business hours, should equal false", function() {
-      expect(bh.isOpenNow(new Date(2017, 9, 1, 16, 0))).to.equal(false);
+      expect(
+        bh.isOpenNow(utils.createDate(2017, 9, 1, 14, 0, TIMEZONE))
+      ).to.equal(false);
     });
     it("inside business hours, should equal true", function() {
-      expect(bh.isOpenNow(new Date(2017, 9, 1, 18, 0))).to.equal(true);
+      expect(
+        bh.isOpenNow(utils.createDate(2017, 9, 1, 18, 0, TIMEZONE))
+      ).to.equal(true);
     });
-    it("cloded day, should equal false", function() {
-      expect(bh.isOpenNow(new Date(2017, 9, 3, 18, 0))).to.equal(false);
+    it("closed day, should equal false", function() {
+      expect(
+        bh.isOpenNow(utils.createDate(2017, 9, 3, 18, 0, TIMEZONE))
+      ).to.equal(false);
+    });
+    it("on holiday day, should equal false", function() {
+      expect(
+        bh.isOpenNow(utils.createDate(2017, 11, 9, 0, 0, TIMEZONE))
+      ).to.equal(false);
+    });
+    it("on holiday day (range), should equal false", function() {
+      expect(
+        bh.isOpenNow(utils.createDate(2017, 11, 24, 0, 0, TIMEZONE))
+      ).to.equal(false);
     });
   });
 
   describe("isClosedNow", function() {
     it("outside business hours, should equal true", function() {
-      expect(bh.isClosedNow(new Date(2017, 9, 1, 16, 0))).to.equal(true);
+      expect(
+        bh.isClosedNow(utils.createDate(2017, 9, 1, 14, 0, TIMEZONE))
+      ).to.equal(true);
     });
     it("inside business hours, should equal false", function() {
-      expect(bh.isClosedNow(new Date(2017, 9, 1, 18, 0))).to.equal(false);
+      expect(
+        bh.isClosedNow(utils.createDate(2017, 9, 1, 18, 0, TIMEZONE))
+      ).to.equal(false);
     });
-    it("cloded day, should equal true", function() {
-      expect(bh.isClosedNow(new Date(2017, 9, 3, 18, 0))).to.equal(true);
+    it("closed day, should equal true", function() {
+      expect(
+        bh.isClosedNow(utils.createDate(2017, 9, 3, 18, 0, TIMEZONE))
+      ).to.equal(true);
+    });
+    it("on holiday day, should equal true", function() {
+      expect(
+        bh.isClosedNow(utils.createDate(2017, 11, 9, 0, 0, TIMEZONE))
+      ).to.equal(true);
+    });
+    it("on holiday day (range), should equal true", function() {
+      expect(
+        bh.isClosedNow(utils.createDate(2017, 11, 24, 0, 0, TIMEZONE))
+      ).to.equal(true);
     });
   });
 
@@ -58,13 +95,19 @@ describe("business-hours-js", function() {
 
   describe("willBeOpenOn", function() {
     it("with future date, should be true", function() {
-      expect(bh.willBeOpenOn(new Date(2019, 9, 3))).to.equal(true);
+      expect(
+        bh.willBeOpenOn(utils.createDate(2018, 0, 3, 0, 0, TIMEZONE))
+      ).to.equal(true);
     });
     it("with future date, on closed day, should be false", function() {
-      expect(bh.willBeOpenOn(new Date(2019, 9, 1))).to.equal(false);
+      expect(
+        bh.willBeOpenOn(utils.createDate(2019, 0, 1, 0, 0, TIMEZONE))
+      ).to.equal(false);
     });
     it("with past date, should be false", function() {
-      expect(bh.willBeOpenOn(new Date(2015, 9, 1))).to.equal(false);
+      expect(
+        bh.willBeOpenOn(utils.createDate(2015, 0, 1, 0, 0, TIMEZONE))
+      ).to.equal(false);
     });
   });
   describe("isOpenTomorrow", function() {
@@ -96,74 +139,140 @@ describe("business-hours-js", function() {
   describe("nextOpeningDate", function() {
     it("monday 2/10/2017, should return 4/10/2017", function() {
       MockDate.set("10/2/2017");
-      var expectedDate = new Date(2017, 9, 4, 0, 0);
-      expect(bh.nextOpeningDate().getTime()).to.equal(expectedDate.getTime());
+      var expectedDate = utils.createDate(2017, 9, 4, 0, 0, TIMEZONE);
+      expect(bh.nextOpeningDate().isSame(expectedDate, "day")).to.equal(true);
       MockDate.reset();
     });
     it("tuesday 3/10/2017, should return 4/10/2017", function() {
       MockDate.set("10/3/2017");
-      var expectedDate = new Date(2017, 9, 4, 0, 0);
-      expect(bh.nextOpeningDate().getTime()).to.equal(expectedDate.getTime());
+      var expectedDate = utils.createDate(2017, 9, 4, 0, 0, TIMEZONE);
+      expect(bh.nextOpeningDate().isSame(expectedDate, "day")).to.equal(true);
       MockDate.reset();
     });
     it("wednesday 4/10/2017, should return 5/10/2017", function() {
       MockDate.set("10/4/2017");
-      var expectedDate = new Date(2017, 9, 5, 0, 0);
-      expect(bh.nextOpeningDate().getTime()).to.equal(expectedDate.getTime());
+      var expectedDate = utils.createDate(2017, 9, 5, 0, 0, TIMEZONE);
+      expect(bh.nextOpeningDate().isSame(expectedDate, "day")).to.equal(true);
       MockDate.reset();
     });
     it("sunday 8/10/2017, should return monday 9/10/2017", function() {
       MockDate.set("10/8/2017");
-      var expectedDate = new Date(2017, 9, 9, 0, 0);
-      expect(bh.nextOpeningDate().getTime()).to.equal(expectedDate.getTime());
+      var expectedDate = utils.createDate(2017, 9, 9, 0, 0, TIMEZONE);
+      expect(bh.nextOpeningDate().isSame(expectedDate, "day")).to.equal(true);
       MockDate.reset();
     });
     it("monday 2/10/2017, should return monday 2/10/2017", function() {
       MockDate.set("10/2/2017");
-      var expectedDate = new Date(2017, 9, 2, 0, 0);
-      expect(bh.nextOpeningDate(true).getTime()).to.equal(
-        expectedDate.getTime()
+      var expectedDate = utils.createDate(2017, 9, 2, 0, 0, TIMEZONE);
+      expect(bh.nextOpeningDate(true).isSame(expectedDate, "day")).to.equal(
+        true
       );
       MockDate.reset();
     });
   });
   describe("nextOpeningHour", function() {
     it("monday 2/10/2017 6:00, should return 2/10/2017 10:00", function() {
-      MockDate.set(new Date(2017, 9, 2, 6, 0));
-      var expectedDate = new Date(2017, 9, 2, 10, 0);
-      expect(bh.nextOpeningHour().getTime()).to.equal(expectedDate.getTime());
+      MockDate.set(utils.createDate(2017, 9, 2, 6, 0, TIMEZONE));
+      var expectedDate = utils.createDate(2017, 9, 2, 10, 0);
+
+      expect(bh.nextOpeningHour().isSame(expectedDate, "minute")).to.equal(
+        true
+      );
       MockDate.reset();
     });
     it("monday 2/10/2017 16:00, should return 2/10/2017 18:00", function() {
-      MockDate.set(new Date(2017, 9, 2, 16, 0));
-      var expectedDate = new Date(2017, 9, 2, 18, 0);
-      expect(bh.nextOpeningHour().getTime()).to.equal(expectedDate.getTime());
+      MockDate.set(utils.createDate(2017, 9, 2, 16, 0, TIMEZONE));
+      var expectedDate = utils.createDate(2017, 9, 2, 18, 0, TIMEZONE);
+      expect(bh.nextOpeningHour().isSame(expectedDate, "minute")).to.equal(
+        true
+      );
       MockDate.reset();
     });
     it("sunday 1/10/2017 20:30, should return 1/10/2017 21:00", function() {
-      MockDate.set(new Date(2017, 9, 1, 20, 30));
-      var expectedDate = new Date(2017, 9, 1, 21, 0);
-      expect(bh.nextOpeningHour().getTime()).to.equal(expectedDate.getTime());
+      MockDate.set(utils.createDate(2017, 9, 1, 20, 30, TIMEZONE));
+      var expectedDate = utils.createDate(2017, 9, 1, 21, 0, TIMEZONE);
+      expect(bh.nextOpeningHour().isSame(expectedDate, "minute")).to.equal(
+        true
+      );
       MockDate.reset();
     });
     it("sunday 1/10/2017 21:30, should return 2/10/2017 10:00", function() {
-      MockDate.set(new Date(2017, 9, 1, 21, 30));
-      var expectedDate = new Date(2017, 9, 2, 10, 0);
-      expect(bh.nextOpeningHour().getTime()).to.equal(expectedDate.getTime());
+      MockDate.set(utils.createDate(2017, 9, 1, 21, 30, TIMEZONE));
+      var expectedDate = utils.createDate(2017, 9, 2, 10, 0, TIMEZONE);
+      expect(bh.nextOpeningHour().isSame(expectedDate, "minute")).to.equal(
+        true
+      );
       MockDate.reset();
     });
     it("tuesday(closed) 3/10/2017 18:30, should return 4/10/2017 10:00", function() {
-      MockDate.set(new Date(2017, 9, 3, 18, 30));
-      var expectedDate = new Date(2017, 9, 4, 10, 0);
-      expect(bh.nextOpeningHour().getTime()).to.equal(expectedDate.getTime());
+      MockDate.set(utils.createDate(2017, 9, 3, 18, 30, TIMEZONE));
+      var expectedDate = utils.createDate(2017, 9, 4, 10, 0, TIMEZONE);
+      expect(bh.nextOpeningHour().isSame(expectedDate, "minute")).to.equal(
+        true
+      );
       MockDate.reset();
+    });
+  });
+  describe("isOnHoliday", function() {
+    it("on holiday 2017/12/11", function() {
+      MockDate.set(utils.createDate(2017, 11, 11, 0, 0, TIMEZONE));
+      expect(bh.isOnHoliday()).to.equal(true);
+    });
+    it("after a holiday 2017/12/12", function() {
+      MockDate.set(utils.createDate(2017, 11, 12, 0, 0, TIMEZONE));
+      expect(bh.isOnHoliday()).to.equal(false);
+    });
+    it("before a holiday 2017/12/9", function() {
+      MockDate.set(utils.createDate(2017, 11, 9, 0, 0, TIMEZONE));
+      expect(bh.isOnHoliday()).to.equal(false);
+    });
+    it("in range 2017/12/24", function() {
+      MockDate.set(utils.createDate(2017, 11, 24, 0, 0, TIMEZONE));
+      expect(bh.isOnHoliday()).to.equal(true);
+    });
+    it("within range, with year change 2018/01/01", function() {
+      MockDate.set(utils.createDate(2018, 0, 1, 0, 0, TIMEZONE));
+      expect(bh.isOnHoliday()).to.equal(true);
+    });
+    it("outside range, with year change 2018/01/04", function() {
+      MockDate.set(utils.createDate(2018, 0, 4, 0, 0, TIMEZONE));
+      expect(bh.isOnHoliday()).to.equal(false);
+    });
+    it("missing holidays in config", function() {
+      bh.init(hoursJsonMissingHolidays);
+      expect(bh.isOnHoliday()).to.equal(false);
+    });
+  });
+  describe("isOnHolidayInDays", function() {
+    it("on holiday 3 days from 2017/12/08", function() {
+      MockDate.set(utils.createDate(2017, 11, 8, 0, 0, TIMEZONE));
+      expect(bh.isOnHolidayInDays(3)).to.equal(true);
+    });
+    it('Nan param "3 days"', function() {
+      expect(bh.isOnHolidayInDays.bind(bh, "3 days")).to.throw(
+        "isOnHolidayInDays(:int) only accepts integers."
+      );
+    });
+    it('NaN param "3"', function() {
+      expect(bh.isOnHolidayInDays.bind(bh, "3")).to.throw(
+        "isOnHolidayInDays(:int) only accepts integers."
+      );
+    });
+    it('NaN param "undefined", x defaults to 1', function() {
+      MockDate.set(utils.createDate(2017, 11, 8, 0, 0, TIMEZONE));
+      expect(bh.isOnHolidayInDays(undefined)).to.equal(false);
+    });
+    it('NaN param ""', function() {
+      expect(bh.isOnHolidayInDays.bind(bh, "")).to.throw(
+        "isOnHolidayInDays(:int) only accepts integers."
+      );
     });
   });
   //MockDate.set('1/1/2000');
   describe("init", function() {
-    it("missing sunday", function() {
+    it("missing monday", function() {
       expect(bh.init.bind(bh, hoursJson2)).to.throw(
-        "Sunday is missing from config"
+        "Monday is missing from config"
       );
     });
     it("missing config, empty object", function() {
@@ -183,7 +292,7 @@ describe("business-hours-js", function() {
     });
     it("missing config, {'a':'test'} ", function() {
       expect(bh.init.bind(bh, { a: "test" })).to.throw(
-        "Sunday is missing from config"
+        "Monday is missing from config"
       );
     });
   });

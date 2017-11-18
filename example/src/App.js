@@ -13,20 +13,36 @@ class App extends Component {
     return (
       <div className="App">
         <header className="App-header">
-          Now it is:{" "}
-          <Clock format={"HH:mm on dddd, MMMM Do YYYY"} ticking={true} />
+          <h1>business-hours.js Example</h1>
+          <h3>
+            {" "}
+            Browser timezone:{" "}
+            <Clock format={"HH:mm on dddd, MMMM Do YYYY z"} ticking={true} />
+          </h3>
+          <h3>
+            {" "}
+            Business timezone:{" "}
+            <Clock
+              format={"HH:mm on dddd, MMMM Do YYYY z"}
+              ticking={true}
+              timezone={hoursJson.timeZone}
+            />
+          </h3>
+
           <p className="App-intro">
-            Is open now? {businessHours.isOpenNow().toString()}
+            The business is currently:{" "}
+            {businessHours.isOpenNow() ? (
+              <span className="open">OPEN</span>
+            ) : (
+              <span className="open">CLOSED</span>
+            )}
           </p>
-          <p>Next opening hour: {businessHours.nextOpeningHour().toString()}</p>
           <p>
-            Is it open tomorrow? {businessHours.isOpenTomorrow().toString()}
+            Next opening hour:{" "}
+            {businessHours.nextOpeningHour().format("YYYY-MM-DD HH:mm z")}
           </p>
         </header>
-        <h1>business-hours.js Example</h1>
-        <p>
-          Sunday: <br />10:00-13:30 and 17:00-20:00 and 21:00-24:00
-        </p>
+        <h2>Defined business hours:</h2>
         <p>
           Monday: <br />10:00-13:30 and 18:00-22:00
         </p>
@@ -44,6 +60,9 @@ class App extends Component {
         </p>
         <p>
           Satuday: <br />10:00-13:30 and 18:00-22:00
+        </p>
+        <p>
+          Sunday: <br />10:00-13:30 and 17:00-20:00 and 21:00-24:00
         </p>
       </div>
     );
