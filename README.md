@@ -1,4 +1,5 @@
 # business-hours.js
+
 Handle business hours of a restaurant, office or any other business. Highly customizable with lots of features, based on moment.js.
 
 [Demo](https://codesandbox.io/s/github/littletower/business-hours.js/tree/master/example)
@@ -7,6 +8,22 @@ Handle business hours of a restaurant, office or any other business. Highly cust
 [![Travis](https://img.shields.io/travis/littletower/business-hours.js.svg?style=flat-square)]()
 [![Codecov](https://img.shields.io/codecov/c/github/littletower/business-hours.js.svg?style=flat-square)]()
 [![npm](https://img.shields.io/npm/v/business-hours.js.svg?style=flat-square)]()
+
+## Features
+
+- *** all your business hours in JSON format ***
+
+- *** split hours (eg. restaurants, from 10:00 to 14:00 and from 18:00 to 22:00) ***
+
+- *** timezone support ***
+
+- *** add holidays (single day or ranges) ***
+
+- *** based on [moment.js](https://momentjs.com/) ***
+
+- *** lightweight less than 115kB (minified + gzipped) ***
+
+
 
 ## Installation
 
