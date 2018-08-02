@@ -164,3 +164,4 @@ Method | Argument | Description
 - [ ] support hourly holidays, like business opens from 20:00 instead of 18:00 on a given date.
 - [ ] add always closed on public holidays (country specific)
 - [ ] add localized formatter to display all the business hours
+- [ ] show holiday formatted range starting from a given date
