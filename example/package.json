@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "private": true,
   "devDependencies": {
-    "react-scripts": "1.0.17"
+    "react-scripts": "2.1.5"
   },
   "dependencies": {
     "business-hours.js": "latest",
-    "moment-timezone": "0.5.14",
-    "react": "16.1.0",
-    "react-dom": "16.1.0",
-    "react-live-clock": "2.0.2"
+    "moment-timezone": "0.5.23",
+    "react": "16.8.2",
+    "react-dom": "16.8.2",
+    "react-live-clock": "3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",
