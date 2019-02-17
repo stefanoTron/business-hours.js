@@ -96,7 +96,7 @@ describe("business-hours-js", function() {
   describe("willBeOpenOn", function() {
     it("with future date, should be true", function() {
       expect(
-        bh.willBeOpenOn(utils.createDate(2018, 0, 3, 0, 0, TIMEZONE))
+        bh.willBeOpenOn(utils.createDate(2021, 0, 3, 0, 0, TIMEZONE))
       ).to.equal(true);
     });
     it("with future date, on closed day, should be false", function() {
