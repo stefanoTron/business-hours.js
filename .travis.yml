@@ -1,18 +1,25 @@
 language: node_js
 cache:
   directories:
-    - node_modules
+  - node_modules
 notifications:
   email: false
 node_js:
-  - '8'
-
+- '8'
 before_script:
-  - npm prune
+- npm prune
 script:
-  - npm run test:single
+- npm run test:single
 after_success:
-  - npm run report-coverage
+- npm run report-coverage
 branches:
   except:
-    - /^v\d+\.\d+\.\d+$/
+  - "/^v\\d+\\.\\d+\\.\\d+$/"
+deploy:
+  provider: npm
+  email: littletower@gmail.com
+  api_key:
+    secure: D5tbY+okXYx79iBRE6WCs8j+lK6dJ+rTsTfJoPPiejZ9Pn8i9K+DWzO+HGn2E+HUWxKhrLz5OnkyB8x1clI6MoHxkQ/7D9buHbSM+nK5VRFCzO3MbPzwgScbSU6AkHNmZwGSZZlaVdFzME97+aAt48ix7Acfy/UWRXDNAzNvAuld+MCqxk3kXSmjtMlohZPWs8PrswzmEYMB2G9NSN1l5MONZK2Vj6yWI/koU1359vqoOgle6RbgjVIPOcTxS2VILgXQ9XHer4XtStx3b8FGbyi21VFwNsqQ5WzercASQbBmkpq6LpoJaeQZhnDKx78fyzOsZwFc7lqr++gll/F1f3qcaVLtjynfckhOE0zBNmw16R74Krzt9Vxp47qs8eTPvd2ciK4tG1JdVhotiml1zCm9fyYKV7PCvfAH1V0xwtDZwdhslT9YoyFMlnhbZBUEvJ1W4vx/KGeKTO5PspXheOnVh8gH0YvctBjQOSyJUtUBKBPC61Zi6f8LhUQsUI1BJMeaydkmIsgJeNawUjp/uZjrrtFg2mO8j5F2QP89aTYUzIZGTVVx9m6wise6wzqOQgAka0yiPnECLavbYWXZWBQhASRDgwLLLgO5zfcOeEmSPhEeeXImSaEL3KYwWc5skOh2OsW38qqw3t772XHj0NhwLt3uqMyGVzhp62CXoTg=
+  on:
+    tags: true
+    repo: littletower/business-hours.js

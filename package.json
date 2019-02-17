@@ -1,6 +1,6 @@
 {
   "name": "business-hours.js",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Business hours javascript lib",
   "keywords": [
     "business hours",
@@ -20,8 +20,7 @@
       "npm run prebuild && babel --copy-files --out-dir dist --ignore *.test.js src",
     "build": "npm run prebuild && babel --out-dir dist --ignore *.test.js src",
     "test": "mocha --compilers js:babel-register src/index.test.js -w",
-    "test:single": "nyc mocha --compilers js:babel-register src/index.test.js",
-    "release": "npm run build && np"
+    "test:single": "nyc mocha --compilers js:babel-register src/index.test.js"
   },
   "babel": {
     "presets": ["es2015", "stage-2"]
