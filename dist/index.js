@@ -1,26 +1,24 @@
 "use strict";
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+var _momentTimezone = _interopRequireDefault(require("moment-timezone"));
 
-var _momentTimezone = require("moment-timezone");
+var _utils = _interopRequireDefault(require("./utils"));
 
-var _momentTimezone2 = _interopRequireDefault(_momentTimezone);
+var _lodash = _interopRequireDefault(require("lodash"));
 
-var _utils = require("./utils");
-
-var _utils2 = _interopRequireDefault(_utils);
-
-var _lodash = require("lodash");
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
 var weekdays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-var BusinessHours = function () {
+var BusinessHours =
+/*#__PURE__*/
+function () {
   function BusinessHours() {
     _classCallCheck(this, BusinessHours);
 
@@ -48,7 +46,7 @@ var BusinessHours = function () {
     value: function init(hours) {
       var _this = this;
 
-      if (_lodash2.default.isEmpty(hours)) {
+      if (_lodash["default"].isEmpty(hours)) {
         throw new Error("Hours are not set. Check your init() function.");
       }
 
@@ -69,26 +67,26 @@ var BusinessHours = function () {
           }
         }
       });
-
       this.hours = hours;
     }
   }, {
     key: "isClosedNow",
     value: function isClosedNow() {
-      var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils2.default.now(this.hours.timeZone);
-
+      var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils["default"].now(this.hours.timeZone);
       return !this.isOpenNow(now);
     }
   }, {
     key: "isOpenNow",
     value: function isOpenNow() {
-      var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils2.default.now(this.hours.timeZone);
+      var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils["default"].now(this.hours.timeZone);
 
       var day = this._getISOWeekDayName(now.isoWeekday());
+
       if (this.isOnHoliday(now)) {
         return false;
-      }
-      //  console.log("now: ", format(now, "DD/MM/YYYY HH:mm"));
+      } //  console.log("now: ", format(now, "DD/MM/YYYY HH:mm"));
+
+
       var isOpenNow = false;
       if (this.hours[day.toString()] === "closed") return isOpenNow;
       this.hours[day.toString()].some(function (fromTo, index) {
@@ -109,7 +107,6 @@ var BusinessHours = function () {
           minute: toMinutes
         });
         isOpenNow = now.isBetween(fromDate, toDate);
-
         return isOpenNow;
       });
       return isOpenNow;
@@ -118,7 +115,9 @@ var BusinessHours = function () {
     key: "willBeOpenOn",
     value: function willBeOpenOn(date) {
       var day = this._getISOWeekDayName(date.isoWeekday());
-      var now = _utils2.default.now(this.hours.timeZone);
+
+      var now = _utils["default"].now(this.hours.timeZone);
+
       if (now.isBefore(date) || now.isSame(date)) {
         if (this.hours[day] !== "closed" && !this.isOnHoliday(date)) {
           return true;
@@ -132,13 +131,15 @@ var BusinessHours = function () {
   }, {
     key: "isOpenTomorrow",
     value: function isOpenTomorrow() {
-      var tomorrow = _utils2.default.now(this.hours.timeZone).add(1, "days");
+      var tomorrow = _utils["default"].now(this.hours.timeZone).add(1, "days");
+
       return this.willBeOpenOn(tomorrow);
     }
   }, {
     key: "isOpenAfterTomorrow",
     value: function isOpenAfterTomorrow() {
-      var afterTomorrow = _utils2.default.now(this.hours.timeZone).add(2, "days");
+      var afterTomorrow = _utils["default"].now(this.hours.timeZone).add(2, "days");
+
       return this.willBeOpenOn(afterTomorrow);
     }
   }, {
@@ -146,13 +147,14 @@ var BusinessHours = function () {
     value: function nextOpeningDate() {
       var includeToday = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
 
-      var date = _utils2.default.now(this.hours.timeZone);
+      var date = _utils["default"].now(this.hours.timeZone);
 
       if (!includeToday) {
         date.add(1, "days");
       }
 
       var nextOpeningDate = null;
+
       while (nextOpeningDate === null) {
         if (this.willBeOpenOn(date)) {
           nextOpeningDate = date;
@@ -160,15 +162,18 @@ var BusinessHours = function () {
           date.add(1, "days");
         }
       }
+
       return nextOpeningDate.hours(0).minutes(0).seconds(0);
     }
   }, {
     key: "nextOpeningHour",
     value: function nextOpeningHour() {
       var nextOpeningHour = this._nextOpeningHour(this.nextOpeningDate(true));
+
       if (nextOpeningHour === null) {
         return this._nextOpeningHour(this.nextOpeningDate(false));
       }
+
       return nextOpeningHour;
     }
   }, {
@@ -177,6 +182,7 @@ var BusinessHours = function () {
       var _this2 = this;
 
       var day = this._getISOWeekDayName(nextOpeningDate.isoWeekday());
+
       var firstDate = null;
       this.hours[day].some(function (fromTo, index) {
         var from = fromTo.from;
@@ -185,49 +191,51 @@ var BusinessHours = function () {
         var fromMinutes = from.substr(3, 2);
         var toHours = to.substr(0, 2);
         var toMinutes = to.substr(3, 2);
-
         var fromDate = nextOpeningDate.hours(fromHours).minutes(fromMinutes).seconds(0);
 
-        if (_utils2.default.now(_this2.hours.timeZone).isBefore(fromDate)) {
+        if (_utils["default"].now(_this2.hours.timeZone).isBefore(fromDate)) {
           firstDate = fromDate;
           return true;
         }
       });
-
       return firstDate;
-    }
-    //nextOpeningDateText
+    } //nextOpeningDateText
     //nextOpeningHourText
 
   }, {
     key: "isOnHoliday",
     value: function isOnHoliday() {
-      var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils2.default.now(this.hours.timeZone);
-      var callback = arguments[1];
+      var now = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : _utils["default"].now(this.hours.timeZone);
+      var callback = arguments.length > 1 ? arguments[1] : undefined;
 
-      if (_lodash2.default.isEmpty(this.hours)) {
+      if (_lodash["default"].isEmpty(this.hours)) {
         throw new Error("Hours are not set. Check your init() function or configuration.");
       }
-      if (_lodash2.default.isEmpty(this.hours.holidays)) {
+
+      if (_lodash["default"].isEmpty(this.hours.holidays)) {
         this.hours.holidays = [];
       }
+
       for (var i = 0; i < this.hours.holidays.length; i++) {
         if (this.hours.holidays[i].indexOf("-") > -1) {
           var dates = this.hours.holidays[i].split("-");
-          var beginDate = (0, _momentTimezone2.default)(dates[0]);
-          var endDate = (0, _momentTimezone2.default)(dates[1]);
+          var beginDate = (0, _momentTimezone["default"])(dates[0]);
+          var endDate = (0, _momentTimezone["default"])(dates[1]);
+
           if (now.isBetween(beginDate, endDate)) {
             typeof callback === "function" && callback();
             return true;
           }
         } else {
-          var holidayDate = (0, _momentTimezone2.default)(this.hours.holidays[i]);
+          var holidayDate = (0, _momentTimezone["default"])(this.hours.holidays[i]);
+
           if (now.isSame(holidayDate, "day")) {
             typeof callback === "function" && callback();
             return true;
           }
         }
       }
+
       return false;
     }
   }, {
@@ -235,10 +243,11 @@ var BusinessHours = function () {
     value: function isOnHolidayInDays() {
       var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
-      if (!_lodash2.default.isInteger(x)) {
+      if (!_lodash["default"].isInteger(x)) {
         throw new Error("isOnHolidayInDays(:int) only accepts integers.");
       }
-      var futureDate = _utils2.default.now(this.hours.timeZone).add(x, "days");
+
+      var futureDate = _utils["default"].now(this.hours.timeZone).add(x, "days");
 
       return this.isOnHoliday(futureDate);
     }
