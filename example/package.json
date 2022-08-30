@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "business-hours.js": "latest",
-    "moment-timezone": "0.5.23",
+    "moment-timezone": "0.5.35",
     "react": "16.8.2",
     "react-dom": "16.8.2",
     "react-live-clock": "3.0.0"
